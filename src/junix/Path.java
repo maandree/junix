@@ -148,7 +148,7 @@ public class Path
     // boolean isRegularFile(final String path)
     // boolean isCharacterSpecialFile(final String path)
     // boolean isBlockSpecialFile(final String path)
-    // boolean isHighPerformaceFile(final String path)
+    // boolean isHighPerformanceFile(final String path)
     // boolean isNamedPipe(final String path)
     // boolean isDomainSocket(final String path)
     // boolean isDoor(final String path)
