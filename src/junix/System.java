@@ -45,6 +45,10 @@ public class System
     // pathconf sysconf
     // ggetloadavg
     // /etc/{group,passwd,gshadow,shadow}
+    // man 3 crypt
     // /etc/services
+    // fcntl ioctl
+    // http://docs.python.org/3.3/library/syslog.html
+    // http://docs.python.org/3.3/library/resource.html
 }
 

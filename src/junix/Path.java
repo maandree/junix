@@ -71,7 +71,7 @@ public class Path
     // void access(final String path)
     // man 2 umask
     // /proc/self/mounts
-    // lockf fallocate fadvise
+    // flock lockf fallocate fadvise
     // getxattr listxattr removexattr setxattr
 }
 
