@@ -43,9 +43,9 @@ public class Path
 	final Stat stat1 = stat(fd1);
 	final Stat stat2 = stat(fd2);
 	
-	return (stat1.inode   == stat2.inode)   && 
-	       (stat1.rdevice == stat2.rdevice) && 
-	       (stat1.size    == stat2.size);
+	return (stat1.inode  == stat2.inode)  && 
+	       (stat1.device == stat2.device) && 
+	       (stat1.size   == stat2.size);
     }
     
     public boolean isSameFile(final String path1, final String path2)
@@ -53,9 +53,9 @@ public class Path
 	final Stat stat1 = stat(path1);
 	final Stat stat2 = stat(path2);
 	
-	return (stat1.inode   == stat2.inode)   && 
-	       (stat1.rdevice == stat2.rdevice) && 
-	       (stat1.size    == stat2.size);
+	return (stat1.inode  == stat2.inode)  && 
+	       (stat1.device == stat2.device) && 
+	       (stat1.size   == stat2.size);
     }
     
     public boolean isMountPoint(final String path)
@@ -74,7 +74,7 @@ public class Path
 	final Stat stat1 = stat(current);
 	final Stat stat2 = stat(parent);
 	
-	return stat1.rdevice != stat2.rdevice;
+	return stat1.device != stat2.device;
     }
     
     public boolean isMountPointByMtab(final String path)
