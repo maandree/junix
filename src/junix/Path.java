@@ -18,6 +18,8 @@
  */
 package junix;
 
+import java.util.*;
+
 
 /**
  * File system functions
@@ -36,9 +38,110 @@ public class Path
     
     
     
-    // boolean isSameFile(final int fd1, final int fd2)
-    // boolean isSameFile(final String path1, final String path2)
-    // boolean isMountPoint(final String path)
+    public boolean isSameFile(final int fd1, final int fd2)
+    {
+	final Stat stat1 = stat(fd1);
+	final Stat stat2 = stat(fd2);
+	
+	return (stat1.inode   == stat2.inode)   && 
+	       (stat1.rdevice == stat2.rdevice) && 
+	       (stat1.size    == stat2.size);
+    }
+    
+    public boolean isSameFile(final String path1, final String path2)
+    {
+	final Stat stat1 = stat(path1);
+	final Stat stat2 = stat(path2);
+	
+	return (stat1.inode   == stat2.inode)   && 
+	       (stat1.rdevice == stat2.rdevice) && 
+	       (stat1.size    == stat2.size);
+    }
+    
+    public boolean isMountPoint(final String path)
+    {
+	return isMountPointByMtab(path) || isMountPointByStat(path);
+    }
+    
+    public boolean isMountPointByStat(final String path)
+    {
+	if (path.replace("/", "").length() == 0)
+	    return true;
+	
+	final String current = (new File(path)).getAbsolutePath();
+	final String parent = current.substring(0, current.lastIndexOf('/'));
+	
+	final Stat stat1 = stat(current);
+	final Stat stat2 = stat(parent);
+	
+	return stat1.rdevice != stat2.rdevice;
+    }
+    
+    public boolean isMountPointByMtab(final String path)
+    {
+	final String abs = (new File(path)).getAbsolutePath();
+	String mtab = "/proc/self/mounts";
+	
+	try (final InputStream is = new FileInputStream(new File(mtab)))
+	{
+	    byte[] data = new byte[10240];
+	    byte[] buf = new byte[1024];
+	    int ptr = 0;
+	    for (;;)
+	    {   int read = is.read(buf);
+		if (read <= 0)
+		    break;
+		if (ptr + read > data.length)
+		    System.arraycopy(data, 0, data = new byte[ptr << 1], 0, ptr);
+		System.arraycopy(buf, 0, data, ptr, read);
+		ptr += read;
+	    }
+	    mtab = new String(data, 0, ptr, "UTF-8");
+	}
+	
+	if (mtab.endsWith("\n"))
+	    mtab = mtab.substring(0, mtab.length() - 1);
+	
+	final String[] mounts = mtab.split("\n");
+	for (final String mount : mounts)
+	    if (abs.equals(mount.split(" ")[1]))
+		return true;
+	return false;
+    }
+    
+    public Mount[] getMounts()
+    {
+	String mtab = "/proc/self/mounts";
+	
+	try (final InputStream is = new FileInputStream(new File(mtab)))
+	{
+	    byte[] data = new byte[10240];
+	    byte[] buf = new byte[1024];
+	    int ptr = 0;
+	    for (;;)
+	    {   int read = is.read(buf);
+		if (read <= 0)
+		    break;
+		if (ptr + read > data.length)
+		    System.arraycopy(data, 0, data = new byte[ptr << 1], 0, ptr);
+		System.arraycopy(buf, 0, data, ptr, read);
+		ptr += read;
+	    }
+	    mtab = new String(data, 0, ptr, "UTF-8");
+	}
+	
+	if (mtab.endsWith("\n"))
+	    mtab = mtab.substring(0, mtab.length() - 1);
+	
+	final String[] mounts = mtab.split("\n");
+	final Mount[] rc = new Mount[mounts.length];
+	
+	for (int i = 0, n = rc.length; i < n; i++)
+	    rc[i] = new Mount(mounts[i]);
+	
+	return rc;
+    }
+    
     // String readlink(final String path)
     // boolean isSymbolicLink(final String path)
     // boolean isDirectory(final String path)
@@ -55,7 +158,7 @@ public class Path
     // void createSymbolicLink(final String target, final String link)
     // void createHardLink(final String target, final String link)
     // [f]stat[v]fs
-    // stat (lstat)
+    // stat (lstat)  fstat
     // int getMajor(final int device)
     // int getMinor(final int device)
     // void makeNode(final String path, final int mode=0600)
@@ -70,7 +173,6 @@ public class Path
     // os.chflags (python)
     // void access(final String path)
     // man 2 umask
-    // /proc/self/mounts
     // flock lockf fallocate fadvise
     // getxattr listxattr removexattr setxattr
 }
