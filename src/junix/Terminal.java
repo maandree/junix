@@ -37,7 +37,7 @@ public class Terminal
     
     
     // boolean isTTY()
-    // boolean isTTY(final int fd=2)
+    // boolean isTTY(final int fd=1)
     // openPTY
     // stty termios
 }
