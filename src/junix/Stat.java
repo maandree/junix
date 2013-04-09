@@ -29,7 +29,7 @@ public class Stat
     /**
      * Device
      */
-    public final int device;
+    public final long device;
     
     /**
      * File serial number
@@ -59,7 +59,7 @@ public class Stat
     /**
      * Device number, if device
      */
-    public final int rdevice;
+    public final long rdevice;
     
     /**
      * Size of file, in bytes

@@ -159,8 +159,8 @@ public class Path
     // void createHardLink(final String target, final String link)
     // [f]stat[v]fs
     // stat (lstat)  fstat
-    // int getMajor(final int device)
-    // int getMinor(final int device)
+    // int getMajor(final long device)
+    // int getMinor(final long device)
     // void makeNode(final String path, final int mode=0600)
     // void makeNode(final String path, final int mode, final long device=0)
     // void makeNode(final String path, final int mode, final int major=0, final int minor=0)
