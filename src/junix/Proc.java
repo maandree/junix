@@ -50,6 +50,6 @@ public class Proc
     // open process with arbitrary fd:s
     // getppid getpid
     // fork forkpty kill killpg nice plock
-    // man 2 shed_*
+    // man 2 sched_*
 }
 
