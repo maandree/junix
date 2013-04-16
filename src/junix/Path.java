@@ -38,7 +38,7 @@ public class Path
     
     
     
-    public boolean isSameFile(final int fd1, final int fd2)
+    public static boolean isSameFile(final int fd1, final int fd2)
     {
 	final Stat stat1 = stat(fd1);
 	final Stat stat2 = stat(fd2);
@@ -48,7 +48,7 @@ public class Path
 	       (stat1.size   == stat2.size);
     }
     
-    public boolean isSameFile(final String path1, final String path2)
+    public static boolean isSameFile(final String path1, final String path2)
     {
 	final Stat stat1 = stat(path1);
 	final Stat stat2 = stat(path2);
@@ -58,12 +58,12 @@ public class Path
 	       (stat1.size   == stat2.size);
     }
     
-    public boolean isMountPoint(final String path)
+    public static boolean isMountPoint(final String path)
     {
 	return isMountPointByMtab(path) || isMountPointByStat(path);
     }
     
-    public boolean isMountPointByStat(final String path)
+    public static boolean isMountPointByStat(final String path)
     {
 	if (path.replace("/", "").length() == 0)
 	    return true;
@@ -77,7 +77,7 @@ public class Path
 	return stat1.device != stat2.device;
     }
     
-    public boolean isMountPointByMtab(final String path)
+    public static boolean isMountPointByMtab(final String path)
     {
 	final String abs = (new File(path)).getAbsolutePath();
 	String mtab = "/proc/self/mounts";
@@ -109,7 +109,7 @@ public class Path
 	return false;
     }
     
-    public Mount[] getMounts()
+    public static Mount[] getMounts()
     {
 	String mtab = "/proc/self/mounts";
 	
@@ -142,25 +142,170 @@ public class Path
 	return rc;
     }
     
+    public static boolean isNamedPipe(final String path)
+    {
+	return (stat(path).mode & 0xF000) == 0x1000; // S_IFIFO
+    }
+    
+    public static boolean isCharacterSpecialFile(final String path)
+    {
+	return (stat(path).mode & 0xF000) == 0x2000; // S_IFCHR
+    }
+    
+    public static boolean isMultiplexedCharacterSpecialFile(final String path)
+    {
+	return (stat(path).mode & 0xF000) == 0x3000; // S_IFMPC
+    }
+    
+    public static boolean isDirectory(final String path)
+    {
+	return (stat(path).mode & 0xF000) == 0x4000; // S_IFDIR
+    }
+    
+    public static boolean isNamedSpecialFile(final String path)
+    {
+	return (stat(path).mode & 0xF000) == 0x5000; // S_IFNAM
+    }
+    
+    public static boolean isNamedSemaphoreFile(final String path)
+    {
+	return (stat(path).mode & 0xF003) == 0x5001; // S_IFNAM | S_INSEM
+    }
+    
+    public static boolean isNamedSharedDataFile(final String path)
+    {
+	return (stat(path).mode & 0xF003) == 0x5002; // S_IFNAM | S_INSHD
+    }
+    
+    public static boolean isBlockSpecialFile(final String path)
+    {
+	return (stat(path).mode & 0xF000) == 0x6000; // S_IFBLK
+    }
+    
+    public static boolean isMultiplexedBlockSpecialFile(final String path)
+    {
+	return (stat(path).mode & 0xF000) == 0x7000; // S_IFMPB
+    }
+    
+    public static boolean isRegularFile(final String path)
+    {
+	return (stat(path).mode & 0xF000) == 0x8000; // S_IFREG
+    }
+    
+    public static boolean isNetworkSpecialFile(final String path)
+    {
+	return (stat(path).mode & 0xF000) == 0x9000; // S_IFNWK
+    }
+    
+    public static boolean isVxFSCompressedFile(final String path)
+    {
+	return (stat(path).mode & 0xF000) == 0x9000; // S_IFCMP
+    }
+    
+    public static boolean isSymbolicLink(final String path)
+    {
+	return (stat(path).mode & 0xF000) == 0xA000; // S_IFLNK
+    }
+    
+    public static boolean isShadowInode(final String path)
+    {
+	return (stat(path).mode & 0xF000) == 0xB000; // S_IFSHAD
+    }
+    
+    public static boolean isDomainSocket(final String path)
+    {
+	return (stat(path).mode & 0xF000) == 0xC000; // S_IFSOCK
+    }
+    
+    public static boolean isDoor(final String path)
+    {
+	return (stat(path).mode & 0xF000) == 0xD000; // S_IFDOOR
+    }
+    
+    public static boolean isWhiteout(final String path)
+    {
+	return (stat(path).mode & 0xF000) == 0xE000; // S_IFWHT
+    }
+    
+    public static boolean isPortFile(final String path)
+    {
+	return (stat(path).mode & 0xF000) == 0xE000; // S_IFPORT
+    }
+    
+    public static boolean isHighPerformanceFile(final String path)
+    {
+	return (stat(path).mode & 0xF000) == -1; // XXX S_IFCTG
+    }
+    
+    public static boolean isOfflineFileWithData(final String path)
+    {
+	return (stat(path).mode & 0xF000) == -1; // XXX S_IFOFD
+    }
+    
+    public static boolean isOfflineFileWithoutData(final String path)
+    {
+	return (stat(path).mode & 0xF000) == -1; // XXX S_IFOFL
+    }
+    
+    public static boolean testBehaviour(final String path)
+    {
+	testBehaviour(path, 1);
+    }
+    
+    public static boolean testBehaviour(final String path, final int seekable)
+    {
+	testBehaviour(path, seekable, seekable > 0 ? 1 : 0, seekable > 0 ? 1 : 0);
+    }
+    
+    public static boolean testBehaviour(final String path, final int seekable, final int finity, final int knownsize)
+    {
+	final int fmt = stat(path).mode & 0xF000;
+	
+	// TODO return false  if not  S_IFIFO S_IFCHR S_IFMPC S_IFBLK S_IFMPB S_IFREG S_IFCTG S_IFOFD S_IFOFL
+	
+	if (seekable > 0)
+	{
+	    // TODO return false  on  S_IFIFO S_IFCHR S_IFMPC
+	}
+	else if (seekable < 0)
+	{
+	    // TODO return false  on  S_IFBLK S_IFMPB S_IFREG S_IFCTG S_IFOFD S_IFOFL
+	}
+	
+	if (finity > 0)
+	{
+	    // TODO return false  on  S_IFCHR S_IFMPC
+	}
+	else if (finity < 0)
+	{
+	    // TODO return false  on  S_IFBLK S_IFMPB S_IFREG S_IFCTG S_IFOFD S_IFOFL
+	}
+	
+	if (knownsize > 0)
+	{
+	    // TODO return false  on  S_IFREG S_IFCTG S_IFOFD S_IFOFL
+	}
+	else if (knownsize < 0)
+	{
+	    // TODO return false  on  S_IFIFO S_IFCHR S_IFMPC S_IFBLK S_IFMPB
+	}
+	
+	return true;
+    }
+    
+    public static native long makeDevice(final int major, final int minor); // makedev
+    
+    public static native int getMajor(final long device); // major
+    
+    public static native int getMinor(final long device); // minor
+    
+    public static native int umask(final int mask); // umask
+    
     // String readlink(final String path)
-    // boolean isSymbolicLink(final String path)
-    // boolean isDirectory(final String path)
-    // boolean isRegularFile(final String path)
-    // boolean isCharacterSpecialFile(final String path)
-    // boolean isBlockSpecialFile(final String path)
-    // boolean isHighPerformanceFile(final String path)
-    // boolean isNamedPipe(final String path)
-    // boolean isDomainSocket(final String path)
-    // boolean isDoor(final String path)
-    // boolean isOfflineFile(final String path)
-    // boolean isNetworkSpecialFile(final String path)
-    // boolean isPortFile(final String path)
     // void createSymbolicLink(final String target, final String link)
     // void createHardLink(final String target, final String link)
     // [f]stat[v]fs
     // stat (lstat)  fstat
-    // int getMajor(final long device)
-    // int getMinor(final long device)
     // void makeNode(final String path, final int mode=0600)
     // void makeNode(final String path, final int mode, final long device=0)
     // void makeNode(final String path, final int mode, final int major=0, final int minor=0)
@@ -172,8 +317,8 @@ public class Path
     // void chmod(final int fd, final int mode)
     // os.chflags (python)
     // void access(final String path)
-    // man 2 umask
     // flock lockf fallocate fadvise
     // getxattr listxattr removexattr setxattr
+    // man 7 sem_overview shm_overview mq_overview
 }
 
