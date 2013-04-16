@@ -285,11 +285,11 @@ public class Path
 	
 	if (knownsize > 0)
 	{
-	    // TODO return false  on  S_IFREG S_IFCTG S_IFOFD S_IFOFL
+	    // TODO return false  on  S_IFIFO S_IFCHR S_IFMPC S_IFBLK S_IFMPB
 	}
 	else if (knownsize < 0)
 	{
-	    // TODO return false  on  S_IFIFO S_IFCHR S_IFMPC S_IFBLK S_IFMPB
+	    // TODO return false  on  S_IFREG S_IFCTG S_IFOFD S_IFOFL
 	}
 	
 	return true;
