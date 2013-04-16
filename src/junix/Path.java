@@ -169,12 +169,14 @@ public class Path
     
     public static boolean isNamedSemaphoreFile(final String path)
     {
-	return (stat(path).mode & 0xF003) == 0x5001; // S_IFNAM | S_INSEM
+	Stat stat = stat(path);
+	return ((stat.mode & 0xF000) == 0x5000) && (stat.rdevice == 1); // S_IFNAM . S_INSEM
     }
     
     public static boolean isNamedSharedDataFile(final String path)
     {
-	return (stat(path).mode & 0xF003) == 0x5002; // S_IFNAM | S_INSHD
+	Stat stat = stat(path);
+	return ((stat.mode & 0xF000) == 0x5000) && (stat.rdevice == 2); // S_IFNAM . S_INSHD
     }
     
     public static boolean isBlockSpecialFile(final String path)
