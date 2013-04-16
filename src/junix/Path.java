@@ -301,16 +301,33 @@ public class Path
     
     public static native int umask(final int mask); // umask
     
+    public static int makeNode(final String path)
+    {
+	makeNode(path, 0600, 0);
+    }
+    
+    public static int makeNode(final String path, final int mode)
+    {
+	makeNode(path, mode, 0);
+    }
+    
+    public static int makeNode(final String path, final int mode, final int major, final int minor)
+    {
+	makeNode(path, mode, makeDevice(major, minor));
+    }
+    
+    public static void makeFIFO(fnal String path)
+    {
+	makeFIFO(path, 0666);
+    }
+    
     // String readlink(final String path)
     // void createSymbolicLink(final String target, final String link)
     // void createHardLink(final String target, final String link)
     // [f]stat[v]fs
     // stat (lstat)  fstat
-    // void makeNode(final String path, final int mode=0600)
-    // void makeNode(final String path, final int mode, final long device=0)
-    // void makeNode(final String path, final int mode, final int major=0, final int minor=0)
-    // void makeFIFO(final String path)
-    // void makeFIFO(final String path, final int mode=0666)
+    // void makeNode(final String path, final int mode, final long device)
+    // void makeFIFO(final String path, final int mode)
     // void chown(final String path, final int owner, final int group)
     // void chown(final int fd, final int owner, final int group)
     // void chmod(final String path, final int mode)
