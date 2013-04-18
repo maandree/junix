@@ -36,11 +36,45 @@ public class Proc
     
     
     
+    public static native long fork(); // fork (should throw exceptions)
+    
+    public static native int alarm(final int seconds); // alarm
+    
+    public static native int alarm(final int microseconds, final int interval); // ualarm
+    
+    public static native int cancelAlarm(); // alarm(0)
+    
+    public static String[] cmdline()
+    {
+	try
+	{   final InputStream is = new FileInputStream("/proc/self/cmdlin");
+	    byte[] data = new byte[256];
+	    int ptr = 0;
+	    for (;;)
+	    {
+		int av = is.available();
+		if (av == 0)
+		    break;
+		if (ptr + av > data.length)
+		    System.arraycopy(data, 0, data = new byte[ptr + av], 0, ptr);
+		ptr += rs.read(data, ptr);
+	    }
+	    is.close();
+	    String rc = new String(data, 0, ptr, "UTF-8");
+	    if (rc.endsWith("\0"))
+		rc = rc.substring(0, rc.length() - 1);
+	    return rc.split("\0");
+	}
+	catch (final IOException err)
+	{   throw new IOError("Cannot use the API filesystem proc, it should be mounted on /proc.", err);
+	}
+    }
+    
+    
     // void chroot(final String path)
     // String getWorkingDirectory()
     // void setWorkingDirectory(final String path)
     // void setWorkingDirectory(final int fd)
-    // /proc/self/cmdline
     // /proc/self/fd/
     // man 3 tcsetpgrp
     // man 3 tcgetpgrp
@@ -49,7 +83,7 @@ public class Proc
     // set environment
     // open process with arbitrary fd:s
     // getppid getpid
-    // fork forkpty kill killpg nice plock
+    // forkpty kill killpg nice plock
     // man 2 sched_*
 }
 
