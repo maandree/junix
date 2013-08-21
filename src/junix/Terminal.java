@@ -40,5 +40,7 @@ public class Terminal
     // boolean isTTY(final int fd=1)
     // openPTY
     // stty termios
+    // ttyname
+    // ctermid
 }
 
