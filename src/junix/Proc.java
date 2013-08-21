@@ -47,7 +47,7 @@ public class Proc
     public static String[] cmdline()
     {
 	try
-	{   final InputStream is = new FileInputStream("/proc/self/cmdlin");
+	{   final InputStream is = new FileInputStream("/proc/self/cmdline");
 	    byte[] data = new byte[256];
 	    int ptr = 0;
 	    for (;;)
